@@ -44,8 +44,8 @@ def check_date(date):
         try:
             r = session.get(url, headers=headers, timeout=5)
             data = r.json()
-            with print_lock:
-                print(f"{date_str} attempt {attempt}: {data}")
+            #with print_lock:
+               # print(f"{date_str} attempt {attempt}: {data}")
             if data:
                 return (date_str, data)
         except Exception as e:
