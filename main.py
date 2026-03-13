@@ -73,7 +73,7 @@ def run_check_loop():
 def heartbeat_loop():
     while True:
         send_telegram("✔ ASP Checker rulează")
-        time.sleep(3600)
+        time.sleep(7200)
 
 # --- Flask server ---
 app = Flask("ASPChecker")
