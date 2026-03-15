@@ -8,7 +8,7 @@ from flask import Flask
 
 # --- Telegram ---
 TG_TOKEN = os.getenv("TG_TOKEN")
-CHAT_ID = os.getenv("TG_CHAT_BUZOC")
+CHAT_ID = os.getenv("TG_CHAT")
 
 def send_telegram(message):
     try:
@@ -18,8 +18,8 @@ def send_telegram(message):
         print("Telegram error:", e)
 
 # --- ASP tokens ---
-TOKEN1 = os.getenv("ASP_TOKEN1_BUZOC")
-TOKEN2 = os.getenv("ASP_TOKEN2_BUZOC")
+TOKEN1 = os.getenv("ASP_TOKEN1")
+TOKEN2 = os.getenv("ASP_TOKEN2")
 
 headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 MAX_RETRIES = 10
@@ -68,11 +68,11 @@ def run_check_loop():
         print("Nimic disponibil\n")
         time.sleep(5)
 
-# --- Telegram heartbeat la 300s ---
+# --- Telegram heartbeat la 3h ---
 def heartbeat_loop():
     while True:
-        send_telegram("✔ ASP Checker rulează")
-        time.sleep(7200)
+        send_telegram("✔ ASP Checker rulează, veti primi acest mesaj la fiecare 3 ore")
+        time.sleep(10800)
 
 # --- Flask server ---
 app = Flask("ASPChecker")
