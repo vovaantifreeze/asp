@@ -69,7 +69,7 @@ def run_check_loop():
 # --- Telegram heartbeat la 6h ---
 def heartbeat_loop():
     while True:
-        send_telegram("Merge botul bratiska ✔")
+        send_telegram("Botul rulează ✔")
         time.sleep(20400)
 
 # --- Flask server ---
