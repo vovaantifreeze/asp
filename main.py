@@ -8,7 +8,7 @@ from flask import Flask
 
 # --- Telegram ---
 TG_TOKEN = os.getenv("TG_TOKEN")
-CHAT_ID = os.getenv("TG_CHAT_BUZOC")
+CHAT_ID = os.getenv("TG_CHAT")
 
 def send_telegram(message):
     try:
@@ -19,7 +19,7 @@ def send_telegram(message):
 
 # --- ASP tokens ---
 TOKEN1 = os.getenv("ASP_TOKEN1")
-TOKEN2 = os.getenv("ASP_TOKEN2_BUZOC")
+TOKEN2 = os.getenv("ASP_TOKEN2")
 
 headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 MAX_RETRIES = 10
@@ -30,7 +30,7 @@ session = requests.Session()
 
 # --- Zile active Aprilie ---
 active_dates = [
-   datetime(2026,4,6),datetime(2026,4,7),datetime(2026,4,8),datetime(2026,4,9),datetime(2026,4,10),datetime(2026,4,13),datetime(2026,4,14),datetime(2026,4,15),datetime(2026,4,16),datetime(2026,4,17),datetime(2026,4,20),datetime(2026,4,21),datetime(2026,4,22),datetime(2026,4,23),datetime(2026,4,24)
+   datetime(2026,4,9),datetime(2026,4,10),datetime(2026,4,13),datetime(2026,4,14),datetime(2026,4,15),datetime(2026,4,16),datetime(2026,4,17),datetime(2026,4,20),datetime(2026,4,21),datetime(2026,4,22),datetime(2026,4,23),datetime(2026,4,24)
 ]
 
 # --- Checker ASP ---
@@ -70,7 +70,7 @@ def run_check_loop():
 def heartbeat_loop():
     while True:
         send_telegram("Botul rulează ✔")
-        time.sleep(20400)
+        time.sleep(40800)
 
 # --- Flask server ---
 app = Flask("ASPChecker")
