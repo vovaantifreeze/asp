@@ -30,10 +30,10 @@ session = requests.Session()
 
 # --- Zile active Aprilie ---
 active_dates = [
-   datetime(2026,4,9),datetime(2026,4,10),datetime(2026,4,13),datetime(2026,4,14),datetime(2026,4,15),datetime(2026,4,16),datetime(2026,4,17),datetime(2026,4,20),datetime(2026,4,21),datetime(2026,4,22),datetime(2026,4,23),datetime(2026,4,24),datetime(2026,5,4),datetime(2026,5,5),datetime(2026,5,6),datetime(2026,5,7),datetime(2026,5,8)
+   datetime(2026,4,10),datetime(2026,4,20),datetime(2026,4,21),datetime(2026,4,22),datetime(2026,4,23),datetime(2026,4,24),datetime(2026,5,5),datetime(2026,5,7)
 ]
 
-# --- Checker ASP ---
+# --- C
 def check_date(date):
     date_str = date.strftime("%Y-%m-%d")
     url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}"
