@@ -28,12 +28,12 @@ MAX_WORKERS = 20
 print_lock = Lock()
 session = requests.Session()
 
-# --- Zile active Aprilie ---
+# --- Zile active ---
 active_dates = [
-   datetime(2026,6,19),datetime(2026,5,18),datetime(2026,5,19),datetime(2026,5,20),datetime(2026,5,21),datetime(2026,5,22)
+   datetime(2026,5,18),datetime(2026,5,19),datetime(2026,5,20),datetime(2026,5,21),datetime(2026,5,22)
 ]
 
-# --- C
+# --- date check 
 def check_date(date):
     date_str = date.strftime("%Y-%m-%d")
     url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}"
@@ -66,7 +66,7 @@ def run_check_loop():
         print("Nimic disponibil\n")
         time.sleep(5)
 
-# --- Telegram heartbeat la 6h ---
+# --- Telegram heartbeat la 12h ---
 def heartbeat_loop():
     while True:
         send_telegram("Botul rulează ✔")
