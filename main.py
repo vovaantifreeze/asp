@@ -30,7 +30,7 @@ session = requests.Session()
 
 # --- Zile active ---
 active_dates = [
-   datetime(2026,6,29),datetime(2026,6,30),datetime(2026,7,1),datetime(2026,7,2),datetime(2026,7,3)
+   datetime(2026,7,27),datetime(2026,7,28),datetime(2026,7,29),datetime(2026,7,30)
 ]
 
 # --- date check 
