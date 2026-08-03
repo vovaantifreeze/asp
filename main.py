@@ -22,15 +22,15 @@ TOKEN1 = os.getenv("ASP_TOKEN1")
 TOKEN2 = os.getenv("ASP_TOKEN2")
 
 headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
-MAX_RETRIES = 5
-RETRY_DELAY = 1.0
+MAX_RETRIES = 8
+RETRY_DELAY = 0.5
 MAX_WORKERS = 3
 print_lock = Lock()
 session = requests.Session()
 
 # --- Zile active ---
 active_dates = [
-   datetime(2026,7,27),datetime(2026,7,28),datetime(2026,7,29),datetime(2026,7,30)
+   datetime(2026,9,9),datetime(2026,8,11),datetime(2026,8,12),datetime(2026,8,13),datetime(2026,8,14),datetime(2026,8,24),datetime(2026,8,25),datetime(2026,8,26),datetime(2026,8,27),datetime(2026,8,28)
 ]
 
 # --- date check 
