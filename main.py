@@ -27,9 +27,9 @@ headers = {
     "Accept": "application/json, text/plain, */*"
 }
 
-MAX_RETRIES = 5
-RETRY_DELAY = 1.0
-MAX_WORKERS = 3
+MAX_RETRIES = 10
+RETRY_DELAY = 0.5
+MAX_WORKERS = 5
 print_lock = Lock()
 session = requests.Session()
 
