@@ -35,7 +35,6 @@ session = requests.Session()
 
 # --- Active Dates ---
 active_dates = [
-    datetime(2026, 9, 21),
     datetime(2026, 8, 11),
     datetime(2026, 8, 12),
     datetime(2026, 8, 13),
