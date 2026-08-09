@@ -21,7 +21,10 @@ def send_telegram(message):
 TOKEN1 = os.getenv("ASP_TOKEN1")
 TOKEN2 = os.getenv("ASP_TOKEN2")
 
-headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*"
+}
 MAX_RETRIES = 5
 RETRY_DELAY = 1.0
 MAX_WORKERS = 3
@@ -30,24 +33,43 @@ session = requests.Session()
 
 # --- Zile active ---
 active_dates = [
-   datetime(2026,9,11),datetime(2026,8,11),datetime(2026,8,12),datetime(2026,8,13),datetime(2026,8,14),datetime(2026,8,24),datetime(2026,8,25),datetime(2026,8,26),datetime(2026,8,27),datetime(2026,8,28)
+   datetime(2026,9,11),datetime(2026, 8, 11), datetime(2026, 8, 12), datetime(2026, 8, 13),
+   datetime(2026, 8, 14), datetime(2026, 8, 24), datetime(2026, 8, 25),
+   datetime(2026, 8, 26), datetime(2026, 8, 27), datetime(2026, 8, 28)
 ]
 
-# --- date check 
+# --- Date check ---
 def check_date(date):
     date_str = date.strftime("%Y-%m-%d")
     url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}"
+    
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             r = session.get(url, headers=headers, timeout=5)
-            data = r.json()
-            #with print_lock:
-               # print(f"{date_str} attempt {attempt}: {data}")
+            
+            # Check for HTTP errors (e.g., 403 Cloudflare, 404, 500)
+            if r.status_code != 200:
+                with print_lock:
+                    print(f"[{date_str}] Attempt {attempt}: HTTP Status {r.status_code}")
+                time.sleep(RETRY_DELAY)
+                continue
+                
+            # Safely parse JSON response
+            try:
+                data = r.json()
+            except ValueError:
+                with print_lock:
+                    print(f"[{date_str}] Attempt {attempt}: Non-JSON response returned (likely HTML or empty)")
+                time.sleep(RETRY_DELAY)
+                continue
+
             if data:
                 return (date_str, data)
+                
         except Exception as e:
             with print_lock:
-                print(f"Error {date_str}: {e}")
+                print(f"Error {date_str} (Attempt {attempt}): {e}")
+        
         time.sleep(RETRY_DELAY)
     return None
 
