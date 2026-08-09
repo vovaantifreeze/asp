@@ -23,9 +23,9 @@ TOKEN2 = os.getenv("ASP_TOKEN2")
 TOKEN3 = os.getenv("ASP_TOKEN3")
 
 headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
-MAX_RETRIES = 5
-RETRY_DELAY = 1.0
-MAX_WORKERS = 3
+MAX_RETRIES = 10
+RETRY_DELAY = 0.5
+MAX_WORKERS = 5
 print_lock = Lock()
 session = requests.Session()
 
