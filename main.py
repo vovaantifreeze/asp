@@ -20,6 +20,7 @@ def send_telegram(message):
 # --- ASP tokens ---
 TOKEN1 = os.getenv("ASP_TOKEN1")
 TOKEN2 = os.getenv("ASP_TOKEN2")
+TOKEN3 = os.getenv("ASP_TOKEN3")
 
 headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 MAX_RETRIES = 5
@@ -30,13 +31,14 @@ session = requests.Session()
 
 # --- Zile active ---
 active_dates = [
-   datetime(2026,9,11),datetime(2026,8,11),datetime(2026,8,12),datetime(2026,8,13),datetime(2026,8,14),datetime(2026,8,24),datetime(2026,8,25),datetime(2026,8,26),datetime(2026,8,27),datetime(2026,8,28)
+   datetime(2026,8,11),datetime(2026,8,12),datetime(2026,8,13),datetime(2026,8,14),datetime(2026,8,24),datetime(2026,8,25),datetime(2026,8,26),datetime(2026,8,27),datetime(2026,8,28)
 ]
 
 # --- date check 
 def check_date(date):
     date_str = date.strftime("%Y-%m-%d")
-    url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}"
+    # Updated URL structure to match: /api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}/{TOKEN3}
+    url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}/{TOKEN3}"
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             r = session.get(url, headers=headers, timeout=5)
@@ -87,3 +89,4 @@ Thread(target=heartbeat_loop, daemon=True).start()
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3000))
     app.run(host="0.0.0.0", port=port)
+    
