@@ -1,21 +1,6 @@
 import os
 import requests
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Thread, Lock
-import time
-from flask import Flask
-
-# --- Telegram ---
-TG_TOKEN = os.getenv("TG_TOKEN")
-CHAT_ID = os.getenv("TG_CHAT")
-
-def send_telegram(message):
-    try:
-        url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
-        requests.get(url, params={"chat_id": CHAT_ID, "text": message}, timeout=10)
-    except Exception as e:
-        print("Telegram error:", e)
 
 # --- ASP tokens ---
 TOKEN1 = os.getenv("ASP_TOKEN1")
@@ -27,95 +12,21 @@ headers = {
     "Accept": "application/json, text/plain, */*"
 }
 
-MAX_RETRIES = 5
-RETRY_DELAY = 1.0
-MAX_WORKERS = 3
-print_lock = Lock()
-session = requests.Session()
+date_str = "2026-09-11"
+url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}/{TOKEN3}"
 
-# --- Active Dates ---
-active_dates = [
-    datetime(2026, 9, 11),
-    datetime(2026, 8, 11),
-    datetime(2026, 8, 12),
-    datetime(2026, 8, 13),
-    datetime(2026, 8, 14),
-    datetime(2026, 8, 24),
-    datetime(2026, 8, 25),
-    datetime(2026, 8, 26),
-    datetime(2026, 8, 27),
-    datetime(2026, 8, 28)
-]
+print("--- DIAGNOSTIC START ---")
+print(f"Testing URL: https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/TOKEN1/TOKEN2/{date_str}/TOKEN3")
+print(f"TOKEN1 set? {bool(TOKEN1)}")
+print(f"TOKEN2 set? {bool(TOKEN2)}")
+print(f"TOKEN3 set? {bool(TOKEN3)}")
 
-# --- Date Check Function ---
-def check_date(date):
-    date_str = date.strftime("%Y-%m-%d")
-    url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}/{TOKEN3}"
-    
-    for attempt in range(1, MAX_RETRIES + 1):
-        try:
-            r = session.get(url, headers=headers, timeout=5)
-            
-            # Print response for debugging if date is Sep 11
-            if date_str == "2026-09-11":
-                with print_lock:
-                    print(f"[DEBUG 2026-09-11] Status: {r.status_code} | Body: {r.text[:150]}")
+try:
+    response = requests.get(url, headers=headers, timeout=10)
+    print(f"HTTP Status Code: {response.status_code}")
+    print(f"Response Content: {response.text}")
+    print(f"Parsed JSON: {response.json()}")
+except Exception as e:
+    print(f"Request Error: {type(e).__name__} - {e}")
 
-            if r.status_code == 200:
-                data = r.json()
-                # Ensure data is non-empty list/dict
-                if data: 
-                    return (date_str, data)
-            else:
-                with print_lock:
-                    print(f"[{date_str}] HTTP {r.status_code} on attempt {attempt}")
-
-        except Exception as e:
-            with print_lock:
-                print(f"Error [{date_str}] attempt {attempt}: {e}")
-                
-        time.sleep(RETRY_DELAY)
-    return None
-
-def run_check_loop():
-    while True:
-        print(f"\nChecking... {datetime.now()}")
-        found_any = False
-        
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            futures = [executor.submit(check_date, d) for d in active_dates]
-            for future in as_completed(futures):
-                result = future.result()
-                if result:
-                    found_any = True
-                    date_str, data = result
-                    message = f"SLOT GASIT: {date_str}\n{data}"
-                    print(message)
-                    send_telegram(message)
-                    
-        if not found_any:
-            print("Nimic disponibil")
-            
-        time.sleep(5)
-
-# --- Telegram heartbeat (12h) ---
-def heartbeat_loop():
-    while True:
-        send_telegram("Botul rulează ✔")
-        time.sleep(43200)
-
-# --- Flask server ---
-app = Flask("ASPChecker")
-
-@app.route("/")
-def home():
-    return "ASP Checker rulează 24/7 ✅"
-
-# --- Start Threads ---
-Thread(target=run_check_loop, daemon=True).start()
-Thread(target=heartbeat_loop, daemon=True).start()
-
-# --- Start Flask ---
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 3000))
-    app.run(host="0.0.0.0", port=port)
+print("--- DIAGNOSTIC END ---")
