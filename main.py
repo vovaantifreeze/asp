@@ -35,7 +35,7 @@ session = requests.Session()
 
 # --- Active Dates ---
 active_dates = [
-    datetime(2026, 9, 11),
+    datetime(2026, 9, 21),
     datetime(2026, 8, 11),
     datetime(2026, 8, 12),
     datetime(2026, 8, 13),
@@ -55,21 +55,10 @@ def check_date(date):
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             r = session.get(url, headers=headers, timeout=5)
-            
-            # Print response for debugging if date is Sep 11
-            if date_str == "2026-09-11":
-                with print_lock:
-                    print(f"[DEBUG 2026-09-11] Status: {r.status_code} | Body: {r.text[:150]}")
-
             if r.status_code == 200:
                 data = r.json()
-                # Ensure data is non-empty list/dict
                 if data: 
                     return (date_str, data)
-            else:
-                with print_lock:
-                    print(f"[{date_str}] HTTP {r.status_code} on attempt {attempt}")
-
         except Exception as e:
             with print_lock:
                 print(f"Error [{date_str}] attempt {attempt}: {e}")
@@ -89,7 +78,12 @@ def run_check_loop():
                 if result:
                     found_any = True
                     date_str, data = result
-                    message = f"SLOT GASIT: {date_str}\n{data}"
+                    
+                    # Format time slots neatly for Telegram
+                    times_list = [item.get("time") for item in data if isinstance(item, dict) and "time" in item]
+                    formatted_times = ", ".join(times_list) if times_list else str(data)
+                    
+                    message = f"🚨 SLOT GĂSIT! 🚨\nData: {date_str}\nOre disponibile: {formatted_times}"
                     print(message)
                     send_telegram(message)
                     
