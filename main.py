@@ -17,24 +17,26 @@ def send_telegram(message):
     except Exception as e:
         print("Telegram error:", e)
 
-# --- ASP tokens ---
-TOKEN1 = os.getenv("ASP_TOKEN1")
-TOKEN2 = os.getenv("ASP_TOKEN2")
-TOKEN3 = os.getenv("ASP_TOKEN3")
+# --- ASP tokens / IDs ---
+TOKEN1 = os.getenv("ASP_TOKEN1") # publicServiceId
+TOKEN2 = os.getenv("ASP_TOKEN2") # publicLocationId
+TOKEN3 = os.getenv("ASP_TOKEN3") # requestId
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "application/json, text/plain, */*"
+    "Accept": "application/json, text/plain, */*",
+    "Content-Type": "application/json"
 }
 
-MAX_RETRIES = 10
+MAX_RETRIES = 5
 RETRY_DELAY = 1.0
 MAX_WORKERS = 3
 print_lock = Lock()
 session = requests.Session()
 
-# --- Active Dates ---
+# --- Zile active ---
 active_dates = [
+    datetime(2026, 9, 11),
     datetime(2026, 8, 11),
     datetime(2026, 8, 12),
     datetime(2026, 8, 13),
@@ -46,18 +48,34 @@ active_dates = [
     datetime(2026, 8, 28)
 ]
 
-# --- Date Check Function ---
+# --- date check (POST) ---
 def check_date(date):
     date_str = date.strftime("%Y-%m-%d")
-    url = f"https://eservicii.gov.md/asp/dimtcca/api/qmatic/times/{TOKEN1}/{TOKEN2}/{date_str}/{TOKEN3}"
+    url = "https://eservicii.gov.md/asp/dimtcca/api/qmatic/times"
+    
+    # Payload-ul exact extras din DevTools
+    payload = {
+        "publicServiceId": TOKEN1,
+        "publicLocationId": TOKEN2,
+        "date": date_str,
+        "requestId": TOKEN3
+    }
     
     for attempt in range(1, MAX_RETRIES + 1):
         try:
-            r = session.get(url, headers=headers, timeout=5)
+            r = session.post(url, json=payload, headers=headers, timeout=5)
+            
             if r.status_code == 200:
-                data = r.json()
-                if data: 
-                    return (date_str, data)
+                try:
+                    data = r.json()
+                    if data: 
+                        return (date_str, data)
+                except Exception:
+                    # Trecem peste erorile de parsare JSON când serverul e în mentenanță orară
+                    pass
+            elif r.status_code in (429, 502, 503):
+                time.sleep(1.5)
+
         except Exception as e:
             with print_lock:
                 print(f"Error [{date_str}] attempt {attempt}: {e}")
@@ -78,7 +96,7 @@ def run_check_loop():
                     found_any = True
                     date_str, data = result
                     
-                    # Format time slots neatly for Telegram
+                    # Formatează orele frumos pentru Telegram
                     times_list = [item.get("time") for item in data if isinstance(item, dict) and "time" in item]
                     formatted_times = ", ".join(times_list) if times_list else str(data)
                     
@@ -91,7 +109,7 @@ def run_check_loop():
             
         time.sleep(5)
 
-# --- Telegram heartbeat (12h) ---
+# --- Telegram heartbeat la 12h ---
 def heartbeat_loop():
     while True:
         send_telegram("Botul rulează ✔")
@@ -104,7 +122,7 @@ app = Flask("ASPChecker")
 def home():
     return "ASP Checker rulează 24/7 ✅"
 
-# --- Start Threads ---
+# --- Pornire threaduri ---
 Thread(target=run_check_loop, daemon=True).start()
 Thread(target=heartbeat_loop, daemon=True).start()
 
