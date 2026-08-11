@@ -36,7 +36,6 @@ session = requests.Session()
 
 # --- Zile active ---
 active_dates = [
-    datetime(2026, 9, 24),
     datetime(2026, 8, 13),
     datetime(2026, 8, 14),
     datetime(2026, 8, 24),
