@@ -22,12 +22,17 @@ TOKEN1 = os.getenv("ASP_TOKEN1") # publicServiceId
 TOKEN2 = os.getenv("ASP_TOKEN2") # publicLocationId
 TOKEN3 = os.getenv("ASP_TOKEN3") # requestId
 
+# Header-e identice cu cele trimise de browser la POST
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
-    "Content-Type": "application/json",
+    "Accept-Language": "ro-MD,ro;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Content-Type": "application/json;charset=UTF-8",
     "Origin": "https://eservicii.gov.md",
-    "Referer": "https://eservicii.gov.md/"
+    "Referer": "https://eservicii.gov.md/",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin"
 }
 
 MAX_RETRIES = 3
@@ -36,7 +41,7 @@ MAX_WORKERS = 3
 print_lock = Lock()
 session = requests.Session()
 
-# --- Zile Active (24-28 August + 25 Septembrie 2026) ---
+# --- Zile Active ---
 active_dates = [
     datetime(2026, 8, 24),
     datetime(2026, 8, 25),
@@ -51,10 +56,11 @@ def check_date(date):
     date_str = date.strftime("%Y-%m-%d")
     url = "https://eservicii.gov.md/asp/dimtcca/api/qmatic/times"
     
+    # Payload-ul exact structurat ca string-uri
     payload = {
-        "publicServiceId": TOKEN1,
-        "publicLocationId": TOKEN2,
-        "requestId": TOKEN3,
+        "publicServiceId": str(TOKEN1).strip(),
+        "publicLocationId": str(TOKEN2).strip(),
+        "requestId": str(TOKEN3).strip(),
         "date": date_str
     }
     
@@ -124,4 +130,3 @@ Thread(target=heartbeat_loop, daemon=True).start()
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3000))
     app.run(host="0.0.0.0", port=port)
-    
