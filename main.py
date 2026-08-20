@@ -48,7 +48,7 @@ active_dates = [
     datetime(2026, 8, 26),
     datetime(2026, 8, 27),
     datetime(2026, 8, 28),
-    datetime(2026, 9, 25)
+    # datetime(2026, 9, 25)
 ]
 
 # --- Date Check Function (Metoda POST) ---
